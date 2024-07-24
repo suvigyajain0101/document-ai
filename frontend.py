@@ -1,8 +1,8 @@
 import dash
 from dash import dcc, html, Input, Output, State, callback
 import requests
-import os
 import base64
+import os
 
 # Initialize Dash app
 app = dash.Dash(__name__)
@@ -47,13 +47,9 @@ def update_output(contents, filename):
             f.write(decoded)
         
         # Send only the filename to the backend
-        response = requests.post("http://0.0.0.0:8000/upload", json={'filename': filename})
-        
-        # Extract text from the response
-        text = response.json().get('text', '')
         return html.Div([
-            html.H3("Extracted Text:"),
-            html.P(text)
+            html.H3("File uploaded successfully!"),
+            html.P(f"Filename: {filename}")
         ])
     return html.Div()
 
@@ -61,11 +57,13 @@ def update_output(contents, filename):
 @app.callback(
     Output('response-output', 'children'),
     Input('submit-button', 'n_clicks'),
-    State('user-input', 'value')
+    State('user-input', 'value'),
+    State('upload-file', 'filename')
 )
-def update_response(n_clicks, value):
-    if n_clicks > 0 and value:
-        response = requests.post("http://0.0.0.0:8000/generate", json={'prompt': value})
+def update_response(n_clicks, value, filename):
+    if n_clicks > 0 and value and filename:
+        # Send prompt and filename to the backend
+        response = requests.post("http://localhost:8000/generate", json={'prompt': value, 'filename': filename})
         generated_text = response.json().get('generated_text', '')
         return html.Div([
             html.H3("Response:"),
