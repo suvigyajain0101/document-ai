@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pydantic
+pygments
+transformers
+torch
+dash
+dash-uploader
+requests
+pymupdf
+flask-cors
